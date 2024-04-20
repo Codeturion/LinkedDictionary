@@ -1,35 +1,14 @@
-﻿namespace Codeturion.DataStructures;
+﻿using Codeturion.Debug;
+
+namespace Codeturion.DataStructures;
 
 public class LinkedDictionary<TKey, TValue>
 {
-    public class KeyValueNode
-    {
-        public TKey Key { get; set; }
-        public TValue? Value { get; set; }
-        public KeyValueNode? NextNode { get; set; }
-        public KeyValueNode? PreviousNode { get; set; }
-
-        public KeyValueNode(TKey key, TValue? value)
-        {
-            Key = key;
-            Value = value;
-            NextNode = null;
-            PreviousNode = null;
-        }
-
-        public KeyValueNode(TKey key, TValue? value, KeyValueNode nextNode, KeyValueNode previousNode)
-        {
-            Key = key;
-            Value = value;
-            NextNode = nextNode;
-            PreviousNode = previousNode;
-        }
-    }
-
-    private readonly KeyValueNode[] _buckets;
+    private readonly Node<TKey,TValue>[] _buckets;
     private readonly HashSet<TKey> _hashSet; // provide quick contains
-    private KeyValueNode? headNode;
-    private KeyValueNode? tailNode;
+    
+    private Node<TKey,TValue>? _headNode;
+    private Node<TKey,TValue>? _tailNode;
     private bool IsFull => _hashSet.Count >= _maxSize;
 
     private int _maxSize;
@@ -37,7 +16,7 @@ public class LinkedDictionary<TKey, TValue>
     public LinkedDictionary(int maxSize)
     {
         _maxSize = maxSize;
-        _buckets = new KeyValueNode[_maxSize];
+        _buckets = new Node<TKey,TValue>[_maxSize];
         _hashSet = new HashSet<TKey>();
     }
 
@@ -58,8 +37,8 @@ public class LinkedDictionary<TKey, TValue>
             RemoveTail();
         }
 
-        int index = GetIndex(key);
-        KeyValueNode newNode = new KeyValueNode(key, value)
+        var index = GetIndex(key);
+        var newNode = new Node<TKey,TValue>(key, value)
         {
             NextNode = _buckets[index],
             PreviousNode = null
@@ -72,15 +51,15 @@ public class LinkedDictionary<TKey, TValue>
 
         _buckets[index] = newNode;
 
-        if (headNode == null)
+        if (_headNode == null)
         {
-            headNode = tailNode = newNode;
+            _headNode = _tailNode = newNode;
         }
         else
         {
-            newNode.NextNode = headNode;
-            headNode.PreviousNode = newNode;
-            headNode = newNode;
+            newNode.NextNode = _headNode;
+            _headNode.PreviousNode = newNode;
+            _headNode = newNode;
         }
 
         _hashSet.Add(key);
@@ -88,25 +67,25 @@ public class LinkedDictionary<TKey, TValue>
 
     private void RemoveTail()
     {
-        if (tailNode == null)
+        if (_tailNode == null)
         {
             return;
         }
 
-        if (tailNode.PreviousNode != null)
+        if (_tailNode.PreviousNode != null)
         {
-            tailNode.PreviousNode.NextNode = null;
+            _tailNode.PreviousNode.NextNode = null;
         }
 
-        if (tailNode == headNode)
+        if (_tailNode == _headNode)
         {
-            headNode = null;
+            _headNode = null;
         }
 
-        tailNode = tailNode.PreviousNode;
+        _tailNode = _tailNode.PreviousNode;
 
-        int index = GetIndex(tailNode.Key);
-        _hashSet.Remove(tailNode.Key);
+        var index = GetIndex(_tailNode.Key);
+        _hashSet.Remove(_tailNode.Key);
         _buckets[index] = null;
     }
 
@@ -119,10 +98,10 @@ public class LinkedDictionary<TKey, TValue>
             return false;
         }
 
-        int index = GetIndex(key);
-        KeyValueNode currentNode = _buckets[index];
+        var index = GetIndex(key);
+        var currentNode = _buckets[index];
 
-        if (currentNode != headNode)
+        if (currentNode != _headNode)
         {
             MoveNode(currentNode);
         }
@@ -131,19 +110,19 @@ public class LinkedDictionary<TKey, TValue>
         return true;
     }
 
-    private void SetTail(KeyValueNode node)
+    private void SetTail(Node<TKey,TValue> node)
     {
         if (node.PreviousNode != null)
         {
-            tailNode = node.PreviousNode;
+            _tailNode = node.PreviousNode;
         }
         else
         {
-            tailNode = headNode;
+            _tailNode = _headNode;
         }
     }
 
-    private void MoveNode(KeyValueNode node) // take a look to naming
+    private void MoveNode(Node<TKey, TValue> node) // take a look to naming
     {
         if (node.PreviousNode != null)
         {
@@ -155,22 +134,22 @@ public class LinkedDictionary<TKey, TValue>
             node.NextNode.PreviousNode = node.PreviousNode;
         }
 
-        if (node == tailNode && node.PreviousNode != null)
+        if (node == _tailNode && node.PreviousNode != null)
         {
-            tailNode = node.PreviousNode;
+            _tailNode = node.PreviousNode;
         }
 
         node.PreviousNode = null;
-        node.NextNode = headNode;
+        node.NextNode = _headNode;
 
-        if (headNode != null)
+        if (_headNode != null)
         {
-            headNode.PreviousNode = node;
+            _headNode.PreviousNode = node;
         }
 
-        headNode = node;
+        _headNode = node;
 
-        if (node == tailNode)
+        if (node == _tailNode)
         {
             SetTail(node);
         }
@@ -183,25 +162,13 @@ public class LinkedDictionary<TKey, TValue>
             return -1;
         }
 
-        int hashCode = key.GetHashCode();
-        int index = hashCode % _buckets.Length;
+        var hashCode = key.GetHashCode();
+        var index = hashCode % _buckets.Length;
         return Math.Abs(index);
     }
     
     public void Print()
     {
-        KeyValueNode? currentNode = headNode;
-        while (currentNode != null)
-        {
-            string prevKey = currentNode.PreviousNode?.Key?.ToString() ?? "";
-            string nextKey = currentNode.NextNode?.Key?.ToString() ?? "";
-            Console.Write($"({prevKey}){currentNode.Key}({nextKey}) ");
-            currentNode = currentNode.NextNode;
-        }
-
-        if (headNode != null && tailNode != null)
-        {
-            Console.WriteLine($"Head:{headNode.Key} Tail:{tailNode.Key}");
-        }
+        DebugHelper.PrintNodes(_headNode,_tailNode);
     }
 }

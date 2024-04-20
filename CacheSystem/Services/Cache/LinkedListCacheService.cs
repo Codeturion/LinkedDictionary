@@ -1,37 +1,38 @@
 ﻿using System.Collections;
 using Codeturion.DataStructures;
+using Codeturion.Debug;
 
 namespace Codeturion.Services.Cache
 {
-    public class LinkedListCacheService<T> : ICacheService<T>,IEnumerable
+    public class LinkedListCacheService<TKey, TValue> : ICacheService<TKey, TValue>, IEnumerable
     {
         private int _currentCount;
-        private Node<T>? _headNode;
-        private Node<T>? _tailNode;
+        private Node<TKey, TValue>? _headNode;
+        private Node<TKey, TValue>? _tailNode;
         private readonly int _limit;
-    
+
         public LinkedListCacheService(int limit)
         {
             _limit = limit;
         }
-    
+
         public IEnumerator GetEnumerator()
         {
-            Node<T>? currentNode = _headNode;
+            var currentNode = _headNode;
             while (currentNode != null)
             {
                 yield return currentNode;
-                currentNode = currentNode.GetNext();
+                currentNode = currentNode.NextNode;
             }
         }
-        
-        public T Get(int key)
+
+        public TValue? Get(TKey key)
         {
-            Node<T>? currentNode = _headNode;
+            var currentNode = _headNode;
 
             while (currentNode != null)
             {
-                if (currentNode.Key == key)
+                if (currentNode.Key != null && currentNode.Key.Equals(key))
                 {
                     var (nextNode, previousNode) = GetNeighborNodes(currentNode);
 
@@ -41,7 +42,7 @@ namespace Codeturion.Services.Cache
                     }
                     else
                     {
-                        previousNode.SetNext(nextNode);
+                        previousNode.NextNode = nextNode;
                     }
 
                     if (nextNode == null)
@@ -50,53 +51,65 @@ namespace Codeturion.Services.Cache
                     }
                     else
                     {
-                        nextNode.SetPrevious(previousNode);
+                        nextNode.PreviousNode = previousNode;
                     }
-                
-                    currentNode.SetNext(_headNode);
-                    currentNode.SetPrevious(null);
 
-                    _headNode?.SetPrevious(currentNode);
-                    _headNode = currentNode;
+                    currentNode.NextNode = _headNode;
+                    currentNode.PreviousNode = null;
 
-                    return currentNode.Data;
+                    if (_headNode != null)
+                    {
+                        _headNode.PreviousNode = currentNode;
+                        _headNode = currentNode;
+                    }
+
+
+                    return currentNode.Value;
                 }
 
-                currentNode = currentNode.GetNext();
+                currentNode = currentNode.NextNode;
             }
 
             return default;
         }
 
-        private (Node<T>? nextNode, Node<T>? previousNode) GetNeighborNodes(Node<T> currentNode)
+        private (Node<TKey, TValue>? nextNode, Node<TKey, TValue>? previousNode) GetNeighborNodes(
+            Node<TKey, TValue> currentNode)
         {
-            var nextNode = currentNode.GetNext();
-            var previousNode = currentNode.GetPrevious();
+            var nextNode = currentNode.NextNode;
+            var previousNode = currentNode.PreviousNode;
             return (nextNode, previousNode);
         }
 
-        public void Put(int key, T data)
+        public void Put(TKey key, TValue data)
         {
             if (IsFull())
             {
-                var previousOfTail = _tailNode?.GetPrevious();
-                previousOfTail?.SetNext(null);
-            
+                var previousOfTail = _tailNode?.PreviousNode;
+
+                if (previousOfTail != null)
+                {
+                    previousOfTail.NextNode = null;
+                }
+
                 _tailNode = previousOfTail;
                 _currentCount--;
             }
-        
-            Node<T>? cachedNode = _headNode;
-            Node<T> newNode = new Node<T>(key, data);
+
+            var cachedNode = _headNode;
+            var newNode = new Node<TKey, TValue>(key, data);
 
             if (_headNode == null)
             {
                 _tailNode = newNode;
             }
 
-            newNode.SetNext(cachedNode);
+            newNode.NextNode = cachedNode;
 
-            cachedNode?.SetPrevious(newNode);
+            if (cachedNode != null)
+            {
+                cachedNode.PreviousNode = newNode;
+            }
 
             _headNode = newNode;
             _currentCount++;
@@ -114,15 +127,7 @@ namespace Codeturion.Services.Cache
 
         public void Print()
         {
-            Node<T>? currentNode = _headNode;
-
-            while (currentNode != null)
-            {
-                Console.Write($"({currentNode.GetPrevious()?.Key}){currentNode.Key}({currentNode.GetNext()?.Key}) ");
-                currentNode = currentNode.GetNext();
-            }
-
-            Console.WriteLine($"Head:{_headNode?.Key} Tail:{_tailNode?.Key}");
+            DebugHelper.PrintNodes(_headNode, _tailNode);
         }
     }
 }

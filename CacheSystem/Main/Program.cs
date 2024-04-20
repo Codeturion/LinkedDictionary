@@ -1,18 +1,19 @@
 ﻿using Codeturion.Services.Cache;
+
 namespace Codeturion.Main;
 
 class Program
 {
     static void Main(string[] args)
     {
-        ICacheService<string> cacheService = new LinkedDictionaryCacheService<string>(3);
+        ICacheService<int, string> cacheService = new LinkedDictionaryCacheService<int, string>(3);
         TestCacheService(cacheService);
-        
-        cacheService = new LinkedListCacheService<string>(3);
+
+        cacheService = new LinkedListCacheService<int, string>(3);
         TestCacheService(cacheService);
     }
 
-    private static void TestCacheService(ICacheService<string> cacheService)
+    private static void TestCacheService(ICacheService<int, string> cacheService)
     {
         Console.WriteLine($"GET {cacheService.GetType()}");
         cacheService.Put(1, "pic1");
@@ -27,7 +28,7 @@ class Program
 
         Console.WriteLine($"GET {cacheService.Get(2)!}");
         cacheService.Print();
-        
+
         Console.WriteLine($"GET {cacheService.Get(1)!}");
         cacheService.Print();
 

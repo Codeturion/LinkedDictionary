@@ -2,9 +2,9 @@
 
 namespace Codeturion.Services.Cache;
 
-public interface ICacheService<T>
+public interface ICacheService<TKey,TValue>
 {
-    public T Get(int key);
-    public void Put(int key, T data);
+    public TValue? Get(TKey key);
+    public void Put(TKey key, TValue data);
     public void Print();
 }

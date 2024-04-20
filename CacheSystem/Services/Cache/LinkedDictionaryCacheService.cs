@@ -1,20 +1,19 @@
-﻿using System.Text;
-using Codeturion.DataStructures;
+﻿using Codeturion.DataStructures;
 
 namespace Codeturion.Services.Cache;
 
-public class LinkedDictionaryCacheService<T> : ICacheService<T>
+public class LinkedDictionaryCacheService<TKey, TValue> : ICacheService<TKey, TValue>
 {
-    private readonly LinkedDictionary<int, T> _linkedDictionary;
+    private readonly LinkedDictionary<TKey, TValue> _linkedDictionary;
 
     public LinkedDictionaryCacheService(int size)
     {
-        _linkedDictionary = new LinkedDictionary<int, T>(size);
+        _linkedDictionary = new LinkedDictionary<TKey, TValue>(size);
     }
 
-    public T Get(int key)
+    public TValue? Get(TKey key)
     {
-        if(_linkedDictionary.TryGetValue(key,out var value))
+        if (_linkedDictionary.TryGetValue(key, out var value))
         {
             return value!;
         }
@@ -22,7 +21,7 @@ public class LinkedDictionaryCacheService<T> : ICacheService<T>
         return default!;
     }
 
-    public void Put(int key, T data)
+    public void Put(TKey key, TValue data)
     {
         _linkedDictionary.Add(key, data);
     }

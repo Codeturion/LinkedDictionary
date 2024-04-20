@@ -1,37 +1,28 @@
 ﻿namespace Codeturion.DataStructures;
 
-public class Node<T>
+public class Node<TKey,TValue> : ILinkedNode
 {
-    public readonly int Key;
+    public TKey Key { get; }
+    public TValue? Value { get; }
+    public Node<TKey,TValue>? NextNode { get; set; }
+    public Node<TKey,TValue>? PreviousNode { get; set; }
 
-    private Node<T>? _nextNode;
-    private Node<T>? _previousNode;
-
-    public T Data;
-
-    public Node(int i, T givenData)
+    public Node(TKey key, TValue? value)
     {
-        Key = i;
-        Data = givenData;
-    }
-    
-    public void SetNext(Node<T>? node)
-    {
-        _nextNode = node;
+        Key = key;
+        Value = value;
+        NextNode = null;
+        PreviousNode = null;
     }
 
-    public void SetPrevious(Node<T>? node)
-    {
-        _previousNode = node;
-    }
+    public string KeyAsString => Key?.ToString() ?? "";
+    ILinkedNode? ILinkedNode.Next => NextNode;
+    ILinkedNode? ILinkedNode.Previous => PreviousNode;
+}
 
-    public Node<T>? GetPrevious()
-    {
-        return _previousNode;
-    }
-
-    public Node<T>? GetNext()
-    {
-        return _nextNode;
-    }
+public interface ILinkedNode
+{
+    string KeyAsString { get; }
+    ILinkedNode? Next { get; }
+    ILinkedNode? Previous { get; }
 }
