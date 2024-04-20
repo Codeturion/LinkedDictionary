@@ -15,6 +15,11 @@
             PreviousNode = null;
         }
 
+        public (LinkedNode<TKey, TValue>? nextNode, LinkedNode<TKey, TValue>? previousNode) GetNeighborNodes()
+        {
+            return (NextNode, PreviousNode);
+        }
+        
         public string KeyAsString => Key?.ToString() ?? "";
         INodeDebug? INodeDebug.Next => NextNode;
         INodeDebug? INodeDebug.Previous => PreviousNode;

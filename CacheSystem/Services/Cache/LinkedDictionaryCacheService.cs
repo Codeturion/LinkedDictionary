@@ -21,9 +21,9 @@ namespace Codeturion.Services.Cache
             return default!;
         }
 
-        public void Put(TKey key, TValue data)
+        public void Put(TKey key, TValue value)
         {
-            _linkedDictionary.Add(key, data);
+            _linkedDictionary.Add(key, value);
         }
 
         public void Print()
