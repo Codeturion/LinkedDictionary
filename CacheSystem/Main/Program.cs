@@ -5,8 +5,16 @@ class Program
 {
     static void Main(string[] args)
     {
-        ICache cacheService = new LinkedListCache(3);
+        ICacheService<string> cacheService = new LinkedDictionaryCacheService<string>(3);
+        TestCacheService(cacheService);
+        
+        cacheService = new LinkedListCacheService<string>(3);
+        TestCacheService(cacheService);
+    }
 
+    private static void TestCacheService(ICacheService<string> cacheService)
+    {
+        Console.WriteLine($"GET {cacheService.GetType()}");
         cacheService.Put(1, "pic1");
         cacheService.Print();
         cacheService.Put(2, "pic2");
@@ -14,14 +22,13 @@ class Program
         cacheService.Put(3, "pic3");
         cacheService.Print();
 
-        Console.WriteLine($"GET {cacheService.Get(2)!.Key}");
+        Console.WriteLine($"GET {cacheService.Get(2)!}");
         cacheService.Print();
 
-        Console.WriteLine($"GET {cacheService.Get(2)!.Key}");
+        Console.WriteLine($"GET {cacheService.Get(2)!}");
         cacheService.Print();
-
-
-        Console.WriteLine($"GET {cacheService.Get(1)!.Key}");
+        
+        Console.WriteLine($"GET {cacheService.Get(1)!}");
         cacheService.Print();
 
         cacheService.Put(4, "pic4");

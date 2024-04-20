@@ -1,22 +1,33 @@
-﻿using Codeturion.DataStructures;
+﻿using System.Collections;
+using Codeturion.DataStructures;
 
 namespace Codeturion.Services.Cache
 {
-    public class LinkedListCache : ICache
+    public class LinkedListCacheService<T> : ICacheService<T>,IEnumerable
     {
         private int _currentCount;
-        private Node? _headNode;
-        private Node? _tailNode;
+        private Node<T>? _headNode;
+        private Node<T>? _tailNode;
         private readonly int _limit;
     
-        public LinkedListCache(int limit)
+        public LinkedListCacheService(int limit)
         {
             _limit = limit;
         }
     
-        public Node? Get(int key)
+        public IEnumerator GetEnumerator()
         {
-            Node? currentNode = _headNode;
+            Node<T>? currentNode = _headNode;
+            while (currentNode != null)
+            {
+                yield return currentNode;
+                currentNode = currentNode.GetNext();
+            }
+        }
+        
+        public T Get(int key)
+        {
+            Node<T>? currentNode = _headNode;
 
             while (currentNode != null)
             {
@@ -48,23 +59,23 @@ namespace Codeturion.Services.Cache
                     _headNode?.SetPrevious(currentNode);
                     _headNode = currentNode;
 
-                    return currentNode;
+                    return currentNode.Data;
                 }
 
                 currentNode = currentNode.GetNext();
             }
 
-            return null;
+            return default;
         }
 
-        private (Node? nextNode, Node? previousNode) GetNeighborNodes(Node currentNode)
+        private (Node<T>? nextNode, Node<T>? previousNode) GetNeighborNodes(Node<T> currentNode)
         {
             var nextNode = currentNode.GetNext();
             var previousNode = currentNode.GetPrevious();
             return (nextNode, previousNode);
         }
 
-        public void Put(int key, string data)
+        public void Put(int key, T data)
         {
             if (IsFull())
             {
@@ -75,8 +86,8 @@ namespace Codeturion.Services.Cache
                 _currentCount--;
             }
         
-            Node? cachedNode = _headNode;
-            Node newNode = new Node(key, data);
+            Node<T>? cachedNode = _headNode;
+            Node<T> newNode = new Node<T>(key, data);
 
             if (_headNode == null)
             {
@@ -103,7 +114,7 @@ namespace Codeturion.Services.Cache
 
         public void Print()
         {
-            Node? currentNode = _headNode;
+            Node<T>? currentNode = _headNode;
 
             while (currentNode != null)
             {

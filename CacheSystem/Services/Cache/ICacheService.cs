@@ -2,9 +2,9 @@
 
 namespace Codeturion.Services.Cache;
 
-public interface ICache
+public interface ICacheService<T>
 {
-    public Node? Get(int key);
-    public void Put(int key, string data);
+    public T Get(int key);
+    public void Put(int key, T data);
     public void Print();
 }

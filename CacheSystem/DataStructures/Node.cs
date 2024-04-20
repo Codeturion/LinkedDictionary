@@ -1,36 +1,36 @@
 ﻿namespace Codeturion.DataStructures;
 
-public class Node
+public class Node<T>
 {
     public readonly int Key;
 
-    private Node? _nextNode;
-    private Node? _previousNode;
+    private Node<T>? _nextNode;
+    private Node<T>? _previousNode;
 
-    private string _data;
+    public T Data;
 
-    public Node(int i, string givenData)
+    public Node(int i, T givenData)
     {
         Key = i;
-        _data = givenData;
+        Data = givenData;
     }
     
-    public void SetNext(Node? node)
+    public void SetNext(Node<T>? node)
     {
         _nextNode = node;
     }
 
-    public void SetPrevious(Node? node)
+    public void SetPrevious(Node<T>? node)
     {
         _previousNode = node;
     }
 
-    public Node? GetPrevious()
+    public Node<T>? GetPrevious()
     {
         return _previousNode;
     }
 
-    public Node? GetNext()
+    public Node<T>? GetNext()
     {
         return _nextNode;
     }
