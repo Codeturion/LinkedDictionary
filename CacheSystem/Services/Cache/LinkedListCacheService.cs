@@ -6,9 +6,11 @@ namespace Codeturion.Services.Cache
 {
     public class LinkedListCacheService<TKey, TValue> : ICacheService<TKey, TValue>, IEnumerable
     {
+        
+        private LinkedNode<TKey, TValue>? _headNode;
+        private LinkedNode<TKey, TValue>? _tailNode;
+        
         private int _currentCount;
-        private Node<TKey, TValue>? _headNode;
-        private Node<TKey, TValue>? _tailNode;
         private readonly int _limit;
 
         public LinkedListCacheService(int limit)
@@ -62,8 +64,7 @@ namespace Codeturion.Services.Cache
                         _headNode.PreviousNode = currentNode;
                         _headNode = currentNode;
                     }
-
-
+                    
                     return currentNode.Value;
                 }
 
@@ -73,11 +74,11 @@ namespace Codeturion.Services.Cache
             return default;
         }
 
-        private (Node<TKey, TValue>? nextNode, Node<TKey, TValue>? previousNode) GetNeighborNodes(
-            Node<TKey, TValue> currentNode)
+        private (LinkedNode<TKey, TValue>? nextNode, LinkedNode<TKey, TValue>? previousNode) GetNeighborNodes(
+            LinkedNode<TKey, TValue> currentLinkedNode)
         {
-            var nextNode = currentNode.NextNode;
-            var previousNode = currentNode.PreviousNode;
+            var nextNode = currentLinkedNode.NextNode;
+            var previousNode = currentLinkedNode.PreviousNode;
             return (nextNode, previousNode);
         }
 
@@ -97,7 +98,7 @@ namespace Codeturion.Services.Cache
             }
 
             var cachedNode = _headNode;
-            var newNode = new Node<TKey, TValue>(key, data);
+            var newNode = new LinkedNode<TKey, TValue>(key, data);
 
             if (_headNode == null)
             {
