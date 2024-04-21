@@ -10,20 +10,18 @@ namespace Codeturion.Data.Structures
 
         private LinkedNode<TKey, TValue>? _headNode;
         private LinkedNode<TKey, TValue>? _tailNode;
-        private bool IsFull => _hashSet.Count >= _maxSize; // discussion point
 
         private readonly int _maxSize;
+
+        private bool IsFull => _hashSet.Count >= _maxSize;
+        // Who should handle being being full? 
+        // This would if it can change its size.
 
         public LinkedDictionary(int maxSize)
         {
             _maxSize = maxSize;
             _buckets = new LinkedNode<TKey, TValue>[_maxSize];
             _hashSet = new HashSet<TKey>();
-        }
-
-        private bool Contains(TKey key)
-        {
-            return _hashSet.Contains(key);
         }
 
         public void Add(TKey key, TValue value)
@@ -39,15 +37,11 @@ namespace Codeturion.Data.Structures
             }
 
             var index = GetIndex(key);
-            var newNode = new LinkedNode<TKey, TValue>(key, value)
-            {
-                NextNode = _buckets[index],
-                PreviousNode = null
-            };
+            var newNode = new LinkedNode<TKey, TValue>(key, value, null, _buckets[index]);
 
             if (_buckets[index] != null)
             {
-                _buckets[index].PreviousNode = newNode;
+                _buckets[index].SetPrevious(newNode);
             }
 
             _buckets[index] = newNode;
@@ -58,36 +52,12 @@ namespace Codeturion.Data.Structures
             }
             else
             {
-                newNode.NextNode = _headNode;
-                _headNode.PreviousNode = newNode;
+                newNode.SetNext(_headNode);
+                _headNode.SetPrevious(newNode);
                 _headNode = newNode;
             }
 
             _hashSet.Add(key);
-        }
-
-        private void RemoveTail()
-        {
-            if (_tailNode == null)
-            {
-                return;
-            }
-
-            if (_tailNode.PreviousNode != null)
-            {
-                _tailNode.PreviousNode.NextNode = null;
-            }
-
-            if (_tailNode == _headNode)
-            {
-                _headNode = null;
-            }
-
-            _tailNode = _tailNode.PreviousNode;
-
-            var index = GetIndex(_tailNode.Key);
-            _hashSet.Remove(_tailNode.Key);
-            _buckets[index] = null;
         }
 
         public bool TryGetValue(TKey key, out TValue? value)
@@ -102,10 +72,6 @@ namespace Codeturion.Data.Structures
             var index = GetIndex(key);
             var currentNode = _buckets[index];
 
-            if (currentNode == null)
-            {
-                return false;
-            }
             if (currentNode != _headNode)
             {
                 MoveNode(currentNode);
@@ -115,43 +81,56 @@ namespace Codeturion.Data.Structures
             return true;
         }
 
-        private void SetTail(LinkedNode<TKey, TValue> linkedNode)
+        private bool Contains(TKey key)
         {
-            if (linkedNode.PreviousNode != null)
-            {
-                _tailNode = linkedNode.PreviousNode;
-            }
-            else
-            {
-                _tailNode = _headNode;
-            }
+            return _hashSet.Contains(key);
         }
 
-        private void MoveNode(LinkedNode<TKey, TValue> linkedNode) // take a look to naming
+        private void RemoveTail()
         {
-            if (linkedNode.PreviousNode != null)
+            if (_tailNode == null)
             {
-                linkedNode.PreviousNode.NextNode = linkedNode.NextNode;
+                return;
             }
 
-            if (linkedNode.NextNode != null)
+            if (_tailNode == _headNode)
             {
-                linkedNode.NextNode.PreviousNode = linkedNode.PreviousNode;
+                _headNode = null;
+            }
+            
+            var index = GetIndex(_tailNode.Key);
+            _hashSet.Remove(_tailNode.Key);
+            
+            _tailNode.GetPrevious()?.SetNext(null);
+            _tailNode = _tailNode.GetPrevious();
+
+            _buckets[index] = null;
+        }
+
+        public void Print()
+        {
+            DebugHelper.PrintNodes(_headNode, _tailNode);
+        }
+
+        private void SetTail(LinkedNode<TKey, TValue> linkedNode)
+        {
+            _tailNode = linkedNode.GetPrevious() ?? _headNode;
+        }
+
+        private void MoveNode(LinkedNode<TKey, TValue> linkedNode)
+        {
+            linkedNode.GetPrevious()?.SetNext(linkedNode.GetNext());
+            linkedNode.GetNext()?.SetPrevious(linkedNode.GetPrevious());
+
+            if (linkedNode == _tailNode && linkedNode.GetPrevious() != null)
+            {
+                _tailNode = linkedNode.GetPrevious();
             }
 
-            if (linkedNode == _tailNode && linkedNode.PreviousNode != null)
-            {
-                _tailNode = linkedNode.PreviousNode;
-            }
+            linkedNode.SetPrevious(null);
+            linkedNode.SetNext(_headNode);
 
-            linkedNode.PreviousNode = null;
-            linkedNode.NextNode = _headNode;
-
-            if (_headNode != null)
-            {
-                _headNode.PreviousNode = linkedNode;
-            }
-
+            _headNode?.SetPrevious(linkedNode);
             _headNode = linkedNode;
 
             if (linkedNode == _tailNode)
@@ -170,11 +149,6 @@ namespace Codeturion.Data.Structures
             var hashCode = key.GetHashCode();
             var index = hashCode % _buckets.Length;
             return Math.Abs(index);
-        }
-
-        public void Print()
-        {
-            DebugHelper.PrintNodes(_headNode, _tailNode);
         }
     }
 }

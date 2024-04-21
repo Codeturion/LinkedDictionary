@@ -7,7 +7,7 @@ public class SimpleLinkedList<TKey, TValue>
 {
     private LinkedNode<TKey, TValue>? _headNode;
     private LinkedNode<TKey, TValue>? _tailNode;
-    
+
     private int _currentCount;
     private readonly int _limit;
 
@@ -22,71 +22,25 @@ public class SimpleLinkedList<TKey, TValue>
 
         while (currentNode != null)
         {
-            if (currentNode.Key != null && currentNode.Key.Equals(key))
+            if (currentNode.Key != null && (currentNode.Key.Equals(key)))
             {
-                RemoveNode(currentNode);
-                AddToHead(currentNode);
+                UpdateNode(currentNode);
                 return currentNode.Value;
             }
 
-            currentNode = currentNode.NextNode;
+            currentNode = currentNode.GetNext();
         }
 
         return default;
-    }
-
-    private void RemoveNode(LinkedNode<TKey, TValue> nodeToRemove)
-    {
-        var nextNode = nodeToRemove.NextNode;
-        var previousNode = nodeToRemove.PreviousNode;
-
-        if (previousNode == null)
-        {
-            _headNode = nextNode;
-        }
-        else
-        {
-            previousNode.NextNode = nextNode;
-        }
-
-        if (nextNode == null)
-        {
-            _tailNode = previousNode;
-        }
-        else
-        {
-            nextNode.PreviousNode = previousNode;
-        }
-    }
-
-    private void AddToHead(LinkedNode<TKey, TValue> newNode)
-    {
-        newNode.NextNode = _headNode;
-        newNode.PreviousNode = null;
-
-        if (_headNode != null)
-        {
-            _headNode.PreviousNode = newNode;
-        }
-
-        _headNode = newNode;
-
-        if (_tailNode == null)
-        {
-            _tailNode = newNode;
-        }
     }
 
     public void Put(TKey key, TValue data)
     {
         if (IsFull())
         {
-            var previousOfTail = _tailNode?.PreviousNode;
+            var previousOfTail = _tailNode?.GetPrevious();
 
-            if (previousOfTail != null)
-            {
-                previousOfTail.NextNode = null;
-            }
+            previousOfTail?.SetNext(null);
 
             _tailNode = previousOfTail;
             _currentCount--;
@@ -100,24 +54,65 @@ public class SimpleLinkedList<TKey, TValue>
             _tailNode = newNode;
         }
 
-        newNode.NextNode = cachedNode;
+        newNode.SetNext(cachedNode);
 
-        if (cachedNode != null)
-        {
-            cachedNode.PreviousNode = newNode;
-        }
+        cachedNode?.SetPrevious(newNode);
 
         _headNode = newNode;
         _currentCount++;
     }
 
-    private bool IsFull()
-    {
-        return _currentCount == _limit;
-    }
-
     public void Print()
     {
         DebugHelper.PrintNodes(_headNode, _tailNode);
+    }
+    
+    private void UpdateNode(LinkedNode<TKey, TValue> node)
+    {
+        DeleteNode(node);
+        AddToHead(node);
+    }
+
+    private void DeleteNode(LinkedNode<TKey, TValue> nodeToRemove)
+    {
+        var (nextNode, previousNode) = nodeToRemove.GetNeighborNodes();
+
+        if (previousNode == null)
+        {
+            _headNode = nextNode;
+        }
+        else
+        {
+            previousNode.SetNext(nextNode);
+        }
+
+        if (nextNode == null)
+        {
+            _tailNode = previousNode;
+        }
+        else
+        {
+            nextNode.SetPrevious(previousNode);
+        }
+    }
+
+    private void AddToHead(LinkedNode<TKey, TValue> newNode)
+    {
+        newNode.SetNext(_headNode);
+        newNode.SetPrevious(null);
+
+        _headNode?.SetPrevious(newNode);
+
+        _headNode = newNode;
+
+        if (_tailNode == null)
+        {
+            _tailNode = newNode;
+        }
+    }
+
+    private bool IsFull()
+    {
+        return _currentCount == _limit;
     }
 }

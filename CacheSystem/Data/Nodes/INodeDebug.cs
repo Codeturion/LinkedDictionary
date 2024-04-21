@@ -8,4 +8,6 @@
         INodeDebug? Next { get; }
         INodeDebug? Previous { get; }
     }
+    
+    // Possible to add interface for int,string etc. if needed.
 }

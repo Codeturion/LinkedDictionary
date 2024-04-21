@@ -11,18 +11,16 @@ namespace Codeturion.Main
     {
         static void Main(string[] args)
         {
-            try
-            {
-                BenchmarkRunner.Run<CacheServiceBenchmark>();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            //BenchmarkRunner.Run<CacheServiceBenchmark>();
+            
+            ICacheService<int, string> linkedDictionaryCacheService = new LinkedDictionaryCacheService<int, string>(3);
+            LogCacheService(linkedDictionaryCacheService);
+
+            ICacheService<int, string> linkedListCacheService = new LinkedListCacheService<int, string>(3);
+            LogCacheService(linkedListCacheService);
         }
 
-        private static void TestCacheService(ICacheService<int, string> cacheService)
+        private static void LogCacheService(ICacheService<int, string> cacheService)
         {
             Console.WriteLine($"GET {cacheService.GetType()}");
             cacheService.Put(1, "pic1");
