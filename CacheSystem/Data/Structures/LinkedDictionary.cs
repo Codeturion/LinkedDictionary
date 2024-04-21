@@ -1,6 +1,7 @@
-﻿using Codeturion.Debug;
+﻿using Codeturion.Data.Nodes;
+using Codeturion.Debug;
 
-namespace Codeturion.DataStructures
+namespace Codeturion.Data.Structures
 {
     public class LinkedDictionary<TKey, TValue>
     {

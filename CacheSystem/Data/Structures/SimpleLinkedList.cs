@@ -1,11 +1,13 @@
-﻿using Codeturion.Debug;
+﻿using Codeturion.Data.Nodes;
+using Codeturion.Debug;
 
-namespace Codeturion.DataStructures;
+namespace Codeturion.Data.Structures;
 
 public class SimpleLinkedList<TKey, TValue>
 {
     private LinkedNode<TKey, TValue>? _headNode;
     private LinkedNode<TKey, TValue>? _tailNode;
+    
     private int _currentCount;
     private readonly int _limit;
 
@@ -22,35 +24,8 @@ public class SimpleLinkedList<TKey, TValue>
         {
             if (currentNode.Key != null && currentNode.Key.Equals(key))
             {
-                var (nextNode, previousNode) = currentNode.GetNeighborNodes();
-
-                if (previousNode == null)
-                {
-                    _headNode = nextNode;
-                }
-                else
-                {
-                    previousNode.NextNode = nextNode;
-                }
-
-                if (nextNode == null)
-                {
-                    _tailNode = previousNode;
-                }
-                else
-                {
-                    nextNode.PreviousNode = previousNode;
-                }
-
-                currentNode.NextNode = _headNode;
-                currentNode.PreviousNode = null;
-
-                if (_headNode != null)
-                {
-                    _headNode.PreviousNode = currentNode;
-                    _headNode = currentNode;
-                }
-
+                RemoveNode(currentNode);
+                AddToHead(currentNode);
                 return currentNode.Value;
             }
 
@@ -58,6 +33,48 @@ public class SimpleLinkedList<TKey, TValue>
         }
 
         return default;
+    }
+
+    private void RemoveNode(LinkedNode<TKey, TValue> nodeToRemove)
+    {
+        var nextNode = nodeToRemove.NextNode;
+        var previousNode = nodeToRemove.PreviousNode;
+
+        if (previousNode == null)
+        {
+            _headNode = nextNode;
+        }
+        else
+        {
+            previousNode.NextNode = nextNode;
+        }
+
+        if (nextNode == null)
+        {
+            _tailNode = previousNode;
+        }
+        else
+        {
+            nextNode.PreviousNode = previousNode;
+        }
+    }
+
+    private void AddToHead(LinkedNode<TKey, TValue> newNode)
+    {
+        newNode.NextNode = _headNode;
+        newNode.PreviousNode = null;
+
+        if (_headNode != null)
+        {
+            _headNode.PreviousNode = newNode;
+        }
+
+        _headNode = newNode;
+
+        if (_tailNode == null)
+        {
+            _tailNode = newNode;
+        }
     }
 
     public void Put(TKey key, TValue data)

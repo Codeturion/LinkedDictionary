@@ -1,4 +1,4 @@
-﻿namespace Codeturion.DataStructures
+﻿namespace Codeturion.Data.Nodes
 {
     public class LinkedNode<TKey,TValue> : INodeDebug
     {

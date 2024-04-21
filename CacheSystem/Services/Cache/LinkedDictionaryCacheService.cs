@@ -1,4 +1,4 @@
-﻿using Codeturion.DataStructures;
+﻿using Codeturion.Data.Structures;
 
 namespace Codeturion.Services.Cache
 {
