@@ -100,21 +100,23 @@ namespace Codeturion.Data.Structures
                 return;
             }
 
-            if (_tailNode == _headNode)
-            {
-                _headNode = null;
-            }
-
-            var index = GetIndex(_tailNode.Key);
             _hashSet.Remove(_tailNode.Key);
 
-            _tailNode.GetPrevious()?.SetNext(null);
-            _tailNode = _tailNode.GetPrevious();
+            if (_tailNode == _headNode) // tail is only one
+            {
+                _nodePoolService.RecycleNode(_tailNode);
+                _headNode = _tailNode = null;
+                return;
+            }
 
-            _nodePoolService.RecycleNode(_buckets[index]);
-            _buckets[index] = null;
+            var prevNode = _tailNode?.GetPrevious();
+            prevNode?.SetNext(null);
+
+            _nodePoolService.RecycleNode(_tailNode);
+
+            _tailNode = prevNode;
         }
-
+        
         public void Print()
         {
             DebugHelper.PrintNodes(_headNode, _tailNode);
