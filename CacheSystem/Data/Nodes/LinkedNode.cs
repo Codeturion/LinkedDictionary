@@ -2,8 +2,8 @@
 {
     public class LinkedNode<TKey, TValue> : INodeDebug
     {
-        public TKey Key { get; }
-        public TValue? Value { get; }
+        public TKey Key { get; private set; }
+        public TValue? Value { get; private set; }
         private LinkedNode<TKey, TValue>? NextNode { get; set; }
         private LinkedNode<TKey, TValue>? PreviousNode { get; set; }
 
@@ -26,6 +26,18 @@
         #endregion Node Helpers
 
         #region Setters
+
+        public void Reset()
+        {
+            SetPrevious(null);
+            SetNext(null);
+        }
+
+        public void SetKeyValue(TKey key, TValue value)
+        {
+            Key = key;
+            Value = value;
+        }
 
         public void SetNext(LinkedNode<TKey, TValue>? nextNode)
         {

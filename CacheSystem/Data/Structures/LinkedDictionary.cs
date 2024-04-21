@@ -1,16 +1,20 @@
 ﻿using Codeturion.Data.Nodes;
 using Codeturion.Debug;
+using Codeturion.Services.Pool;
 
 namespace Codeturion.Data.Structures
 {
     public class LinkedDictionary<TKey, TValue>
     {
         private readonly LinkedNode<TKey, TValue>[] _buckets;
-        private readonly HashSet<TKey> _hashSet; // provide quick contains 
+        private readonly HashSet<TKey> _hashSet; // provide quick contains costs little memory
+        // TODO Optimize this but just putting the hashes.
 
         private LinkedNode<TKey, TValue>? _headNode;
         private LinkedNode<TKey, TValue>? _tailNode;
 
+        private readonly NodePoolService<TKey, TValue> _nodePoolService;
+        private readonly int _poolSize = 3;
         private readonly int _maxSize;
 
         private bool IsFull => _hashSet.Count >= _maxSize;
@@ -22,6 +26,7 @@ namespace Codeturion.Data.Structures
             _maxSize = maxSize;
             _buckets = new LinkedNode<TKey, TValue>[_maxSize];
             _hashSet = new HashSet<TKey>();
+            _nodePoolService = new NodePoolService<TKey, TValue>(_poolSize);
         }
 
         public void Add(TKey key, TValue value)
@@ -37,7 +42,9 @@ namespace Codeturion.Data.Structures
             }
 
             var index = GetIndex(key);
-            var newNode = new LinkedNode<TKey, TValue>(key, value, null, _buckets[index]);
+
+            var newNode = _nodePoolService.GetNodeFromPool(key, value); //  GetNodeFromPool(key, value);
+            newNode.SetNext(_buckets[index]);
 
             if (_buckets[index] != null)
             {
@@ -97,13 +104,14 @@ namespace Codeturion.Data.Structures
             {
                 _headNode = null;
             }
-            
+
             var index = GetIndex(_tailNode.Key);
             _hashSet.Remove(_tailNode.Key);
-            
+
             _tailNode.GetPrevious()?.SetNext(null);
             _tailNode = _tailNode.GetPrevious();
 
+            _nodePoolService.RecycleNode(_buckets[index]);
             _buckets[index] = null;
         }
 
