@@ -1,4 +1,4 @@
-﻿namespace Codeturion.Services.Cache
+﻿namespace Codeturion.Scripts.Services.Cache
 {
     public interface ICacheService<TKey,TValue>
     {

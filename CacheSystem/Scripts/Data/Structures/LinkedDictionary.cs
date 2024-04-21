@@ -1,8 +1,8 @@
-﻿using Codeturion.Data.Nodes;
-using Codeturion.Debug;
-using Codeturion.Services.Pool;
+﻿using Codeturion.Scripts.Data.Nodes;
+using Codeturion.Scripts.Debug;
+using Codeturion.Scripts.Services.Pool;
 
-namespace Codeturion.Data.Structures
+namespace Codeturion.Scripts.Data.Structures
 {
     public class LinkedDictionary<TKey, TValue>
     {

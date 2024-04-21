@@ -1,7 +1,7 @@
-﻿using Codeturion.Data.Nodes;
-using Codeturion.Debug;
+﻿using Codeturion.Scripts.Data.Nodes;
+using Codeturion.Scripts.Debug;
 
-namespace Codeturion.Data.Structures;
+namespace Codeturion.Scripts.Data.Structures;
 
 public class SimpleLinkedList<TKey, TValue>
 {

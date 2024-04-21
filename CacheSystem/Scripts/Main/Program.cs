@@ -1,23 +1,20 @@
-﻿using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Jobs;
-using BenchmarkDotNet.Running;
-using BenchmarkDotNet.Toolchains.InProcess.Emit;
+﻿using BenchmarkDotNet.Running;
 using Codeturion.Benchmark;
-using Codeturion.Services.Cache;
+using Codeturion.Scripts.Services.Cache;
 
-namespace Codeturion.Main
+namespace Codeturion.Scripts.Main
 {
     class Program
     {
         static void Main(string[] args)
         {
-           // BenchmarkRunner.Run<CacheServiceBenchmark>();
+           BenchmarkRunner.Run<CacheServiceBenchmark>();
             
-            ICacheService<int, string> linkedDictionaryCacheService = new LinkedDictionaryCacheService<int, string>(3);
-            LogCacheService(linkedDictionaryCacheService);
-            
-           ICacheService<int, string> linkedListCacheService = new LinkedListCacheService<int, string>(3);
-           LogCacheService(linkedListCacheService);
+           //  ICacheService<int, string> linkedDictionaryCacheService = new LinkedDictionaryCacheService<int, string>(3);
+           //  LogCacheService(linkedDictionaryCacheService);
+           //  
+           // ICacheService<int, string> linkedListCacheService = new LinkedListCacheService<int, string>(3);
+           // LogCacheService(linkedListCacheService);
         }
 
         private static void LogCacheService(ICacheService<int, string> cacheService)

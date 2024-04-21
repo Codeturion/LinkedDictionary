@@ -1,6 +1,6 @@
-﻿using Codeturion.Data.Nodes;
+﻿using Codeturion.Scripts.Data.Nodes;
 
-namespace Codeturion.Services.Pool;
+namespace Codeturion.Scripts.Services.Pool;
 
 public class NodePoolService<TKey, TValue>
 {

@@ -1,5 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Codeturion.Services.Cache;
+using Codeturion.Scripts.Services.Cache;
 
 namespace Codeturion.Benchmark;
 
@@ -10,8 +10,8 @@ public class CacheServiceBenchmark
     private ICacheService<int, string> dictionaryCacheService;
     private ICacheService<int, string> linkedListCacheService;
 
-    private int _cacheSize = 2500;
-    [Params(2500, 25000, 250000)] public int N { get; set; }
+    private int _cacheSize = 250;
+    [Params(250, 2500, 25000)] public int N { get; set; }
 
     [IterationSetup(Targets = new[] { $"{nameof(LinkedDictionaryGetBenchmark)}", $"{nameof(LinkedListGetBenchmark)}" })]
     public void SetupGet()

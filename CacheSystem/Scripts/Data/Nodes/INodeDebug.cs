@@ -1,4 +1,4 @@
-﻿namespace Codeturion.Data.Nodes
+﻿namespace Codeturion.Scripts.Data.Nodes
 {
     // Make debug logging easy for now
 // Not for using inside the code

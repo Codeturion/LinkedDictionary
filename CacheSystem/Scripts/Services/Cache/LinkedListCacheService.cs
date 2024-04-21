@@ -1,6 +1,6 @@
-﻿using Codeturion.Data.Structures;
+﻿using Codeturion.Scripts.Data.Structures;
 
-namespace Codeturion.Services.Cache
+namespace Codeturion.Scripts.Services.Cache
 {
     public class LinkedListCacheService<TKey, TValue> : ICacheService<TKey, TValue>
     {
