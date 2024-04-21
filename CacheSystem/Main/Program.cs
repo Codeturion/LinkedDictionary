@@ -6,11 +6,11 @@ namespace Codeturion.Main
     {
         static void Main(string[] args)
         {
-            ICacheService<int, string> cacheService = new LinkedDictionaryCacheService<int, string>(3);
-            TestCacheService(cacheService);
+            ICacheService<int, string> linkedDictionaryCacheService = new LinkedDictionaryCacheService<int, string>(3);
+            TestCacheService(linkedDictionaryCacheService);
 
-            cacheService = new LinkedListCacheService<int, string>(3);
-            TestCacheService(cacheService);
+            ICacheService<int, string> linkedListCacheService = new LinkedListCacheService<int, string>(3);
+            TestCacheService(linkedListCacheService);
         }
 
         private static void TestCacheService(ICacheService<int, string> cacheService)

@@ -10,9 +10,9 @@ namespace Codeturion.Data.Structures
 
         private LinkedNode<TKey, TValue>? _headNode;
         private LinkedNode<TKey, TValue>? _tailNode;
-        private bool IsFull => _hashSet.Count >= _maxSize;
+        private bool IsFull => _hashSet.Count >= _maxSize; // discussion point
 
-        private int _maxSize;
+        private readonly int _maxSize;
 
         public LinkedDictionary(int maxSize)
         {
