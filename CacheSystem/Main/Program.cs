@@ -1,4 +1,9 @@
-﻿using Codeturion.Services.Cache;
+﻿using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.Emit;
+using Codeturion.Benchmark;
+using Codeturion.Services.Cache;
 
 namespace Codeturion.Main
 {
@@ -6,11 +11,15 @@ namespace Codeturion.Main
     {
         static void Main(string[] args)
         {
-            ICacheService<int, string> linkedDictionaryCacheService = new LinkedDictionaryCacheService<int, string>(3);
-            TestCacheService(linkedDictionaryCacheService);
-
-            ICacheService<int, string> linkedListCacheService = new LinkedListCacheService<int, string>(3);
-            TestCacheService(linkedListCacheService);
+            try
+            {
+                BenchmarkRunner.Run<CacheServiceBenchmark>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         private static void TestCacheService(ICacheService<int, string> cacheService)

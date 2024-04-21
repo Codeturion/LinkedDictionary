@@ -102,6 +102,10 @@ namespace Codeturion.Data.Structures
             var index = GetIndex(key);
             var currentNode = _buckets[index];
 
+            if (currentNode == null)
+            {
+                return false;
+            }
             if (currentNode != _headNode)
             {
                 MoveNode(currentNode);
