@@ -1,4 +1,6 @@
-﻿namespace Codeturion.Scripts.Strategies;
+﻿using System;
+
+namespace Codeturion.Scripts.Strategies;
 
 public class SimpleHashStrategy<TKey> : IHashStrategy<TKey>
 {

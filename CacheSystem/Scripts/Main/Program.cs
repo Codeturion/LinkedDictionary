@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Running;
+﻿using System;
+using BenchmarkDotNet.Running;
 using Codeturion.Benchmark;
 using Codeturion.Scripts.Services.Cache;
 
