@@ -6,20 +6,29 @@ namespace Codeturion.Scripts.Main
 {
     class Program
     {
+        private const bool BenchmarkMode = true;
+
         static void Main(string[] args)
         {
-           // BenchmarkRunner.Run<CacheServiceBenchmark>();
-            
+            if(BenchmarkMode)
+            {
+                BenchmarkRunner.Run<CacheServiceBenchmark>();
+                return;
+            }
+
+            Console.WriteLine($"CREATE {nameof(LinkedDictionaryCacheService<int, string>)}");
             ICacheService<int, string> linkedDictionaryCacheService = new LinkedDictionaryCacheService<int, string>(3);
             LogCacheService(linkedDictionaryCacheService);
             
-           ICacheService<int, string> linkedListCacheService = new LinkedListCacheService<int, string>(3);
-           LogCacheService(linkedListCacheService);
+            Console.WriteLine();
+            
+            Console.WriteLine($"CREATE {nameof(LinkedListCacheService<int, string>)}");
+            ICacheService<int, string> linkedListCacheService = new LinkedListCacheService<int, string>(3);
+            LogCacheService(linkedListCacheService);
         }
 
         private static void LogCacheService(ICacheService<int, string> cacheService)
         {
-            Console.WriteLine($"GET {cacheService.GetType()}");
             cacheService.Put(1, "pic1");
             cacheService.Print();
             cacheService.Put(2, "pic2");
