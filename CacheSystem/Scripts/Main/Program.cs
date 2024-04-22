@@ -8,13 +8,13 @@ namespace Codeturion.Scripts.Main
     {
         static void Main(string[] args)
         {
-           BenchmarkRunner.Run<CacheServiceBenchmark>();
+           // BenchmarkRunner.Run<CacheServiceBenchmark>();
             
-           //  ICacheService<int, string> linkedDictionaryCacheService = new LinkedDictionaryCacheService<int, string>(3);
-           //  LogCacheService(linkedDictionaryCacheService);
-           //  
-           // ICacheService<int, string> linkedListCacheService = new LinkedListCacheService<int, string>(3);
-           // LogCacheService(linkedListCacheService);
+            ICacheService<int, string> linkedDictionaryCacheService = new LinkedDictionaryCacheService<int, string>(3);
+            LogCacheService(linkedDictionaryCacheService);
+            
+           ICacheService<int, string> linkedListCacheService = new LinkedListCacheService<int, string>(3);
+           LogCacheService(linkedListCacheService);
         }
 
         private static void LogCacheService(ICacheService<int, string> cacheService)

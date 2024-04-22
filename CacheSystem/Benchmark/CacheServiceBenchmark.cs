@@ -10,7 +10,7 @@ public class CacheServiceBenchmark
     private ICacheService<int, string> dictionaryCacheService;
     private ICacheService<int, string> linkedListCacheService;
 
-    private int _cacheSize = 250;
+    private readonly int _cacheSize = 250;
     [Params(250, 2500, 25000)] public int N { get; set; }
 
     [IterationSetup(Targets = new[] { $"{nameof(LinkedDictionaryGetBenchmark)}", $"{nameof(LinkedListGetBenchmark)}" })]

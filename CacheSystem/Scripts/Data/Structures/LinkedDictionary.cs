@@ -1,6 +1,7 @@
 ﻿using Codeturion.Scripts.Data.Nodes;
 using Codeturion.Scripts.Debug;
 using Codeturion.Scripts.Services.Pool;
+using Codeturion.Scripts.Strategies;
 
 namespace Codeturion.Scripts.Data.Structures
 {
@@ -8,13 +9,16 @@ namespace Codeturion.Scripts.Data.Structures
     {
         private readonly LinkedNode<TKey, TValue>[] _buckets;
         private readonly HashSet<TKey> _hashSet; // provide quick contains costs little memory
-        // TODO Optimize this but just putting the hashes.
 
         private LinkedNode<TKey, TValue>? _headNode;
         private LinkedNode<TKey, TValue>? _tailNode;
 
         private readonly NodePoolService<TKey, TValue> _nodePoolService;
         private readonly int _poolSize = 3;
+
+        private readonly IHashStrategy<TKey> _hashStrategy;
+
+
         private readonly int _maxSize;
 
         private bool IsFull => _hashSet.Count >= _maxSize;
@@ -27,6 +31,7 @@ namespace Codeturion.Scripts.Data.Structures
             _buckets = new LinkedNode<TKey, TValue>[_maxSize];
             _hashSet = new HashSet<TKey>();
             _nodePoolService = new NodePoolService<TKey, TValue>(_poolSize);
+            _hashStrategy = new SimpleHashStrategy<TKey>();
         }
 
         public void Add(TKey key, TValue value)
@@ -71,7 +76,7 @@ namespace Codeturion.Scripts.Data.Structures
         {
             value = default;
 
-            if (!_hashSet.Contains(key))
+            if (!Contains(key))
             {
                 return false;
             }
@@ -116,7 +121,7 @@ namespace Codeturion.Scripts.Data.Structures
 
             _tailNode = prevNode;
         }
-        
+
         public void Print()
         {
             DebugHelper.PrintNodes(_headNode, _tailNode);
@@ -156,9 +161,8 @@ namespace Codeturion.Scripts.Data.Structures
                 return -1;
             }
 
-            var hashCode = key.GetHashCode();
-            var index = hashCode % _buckets.Length;
-            return Math.Abs(index);
+            var hashCode = _hashStrategy.GetHashCode(key);
+            return _hashStrategy.GetBucketIndex(hashCode, _buckets.Length);
         }
     }
 }
