@@ -8,7 +8,7 @@ This document outlines benchmark results comparing the performance and scalabili
 
 - **Operating System**: [Windows 10]
 - **CPU**: [Specify CPU, e.g., Intel i7-13700K]
-- **Memory**: [Specify RAM, e.g., 32GB DDR5]
+- **Memory**: [32GB DDR5]
 - **Tool Used**: [BenchmarkDotNet]
 
 ### Data Structures Tested
